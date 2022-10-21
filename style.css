@@ -33,10 +33,31 @@ body {
     margin: 0 auto 0;
 }
 
+@media screen and (max-width: 550px) {
+    .main-page {
+        width: 400px;
+    }
+
+    .header-wrapper {
+        width: 400px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .main-page {
+        width: 300px;
+    }
+
+    .header-wrapper {
+        width: 300px;
+    }
+}
+
 .task {
     width: 56%;
     display: inline-block;
     flex-grow: 1;
+    overflow: hidden;
 }
 
 .task-row-wrapper {

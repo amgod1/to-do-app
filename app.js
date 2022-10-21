@@ -57,19 +57,31 @@ var createNewTaskElement=function(taskString){
     return listItem;
 }
 
+var addTaskStorage=function(task){
+    console.log("Add Task...");
+    var listItem=createNewTaskElement(task);
 
+    //Append listItem to incompleteTaskHolder
+    incompleteTaskHolder.appendChild(listItem);
+    bindTaskEvents(listItem, taskCompleted);
+
+    ajaxRequest()
+
+}
 
 var addTask=function(){
     console.log("Add Task...");
     //Create a new list item with the text from the #new-task:
     if (!taskInput.value) return;
     var listItem=createNewTaskElement(taskInput.value);
-
+    
     //Append listItem to incompleteTaskHolder
     incompleteTaskHolder.appendChild(listItem);
     bindTaskEvents(listItem, taskCompleted);
 
     taskInput.value="";
+    startItems.todo.push(listItem.querySelector('.task').innerText)
+    localStorage.setItem('todo', JSON.stringify(startItems))
 
 }
 
@@ -109,32 +121,63 @@ var deleteTask=function(){
 
     var listItem=this.parentNode;
     var ul=listItem.parentNode;
+
+    if (ul.id === 'completed-tasks') {
+        let deleted = listItem.querySelector('.task').innerText
+        startItems.completed.splice(startItems.completed.indexOf(deleted), 1)
+    } else {
+        let deleted = listItem.querySelector('.task').innerText
+        startItems.todo.splice(startItems.todo.indexOf(deleted), 1)
+    }
     //Remove the parent list item from the ul.
     ul.removeChild(listItem);
-
+    localStorage.setItem('todo', JSON.stringify(startItems))
 }
 
 
 //Mark task completed
+var taskCompletedStorage=function(task){
+    console.log("Complete Task...");
+
+    //Append the task list item to the #completed-tasks
+    var listItem=createNewTaskElement(task);
+
+    completedTasksHolder.appendChild(listItem);
+    bindTaskEvents(listItem, taskIncomplete);
+
+}
+
 var taskCompleted=function(){
     console.log("Complete Task...");
 
     //Append the task list item to the #completed-tasks
     var listItem=this.parentNode;
+
     completedTasksHolder.appendChild(listItem);
     bindTaskEvents(listItem, taskIncomplete);
+
+    let deleted = listItem.querySelector('.task').innerText
+    startItems.todo.splice(startItems.todo.indexOf(deleted), 1)
+    startItems.completed.push(deleted)
+    localStorage.setItem('todo', JSON.stringify(startItems))
 
 }
 
 
 var taskIncomplete=function(){
     console.log("Incomplete Task...");
-//Mark task as incomplete.
+    //Mark task as incomplete.
     //When the checkbox is unchecked
     //Append the task list item to the #incompleteTasks.
     var listItem=this.parentNode;
     incompleteTaskHolder.appendChild(listItem);
     bindTaskEvents(listItem,taskCompleted);
+
+    let deleted = listItem.querySelector('.task').innerText
+    startItems.completed.splice(startItems.todo.indexOf(deleted), 1)
+    startItems.todo.push(deleted)
+    localStorage.setItem('todo', JSON.stringify(startItems))
+
 }
 
 
@@ -153,8 +196,7 @@ addButton.addEventListener("click",ajaxRequest);
 
 
 var bindTaskEvents=function(taskListItem,checkBoxEventHandler){
-    console.log("bind list item events");
-//select ListItems children
+    //select ListItems children
     var checkBox=taskListItem.querySelector("input[type=checkbox]");
     var editButton=taskListItem.querySelector("button.edit");
     var deleteButton=taskListItem.querySelector("button.delete");
@@ -177,19 +219,23 @@ for (var i=0; i<incompleteTaskHolder.children.length;i++){
 }
 
 
-
-
 //cycle over completedTasksHolder ul list items
 for (var i=0; i<completedTasksHolder.children.length;i++){
     //bind events to list items chldren(tasksIncompleted)
     bindTaskEvents(completedTasksHolder.children[i],taskIncomplete);
 }
 
-
-
-
 // Issues with usability don't get seen until they are in front of a human tester.
 
 //prevent creation of empty tasks.
 
 //Change edit to save when you are in edit mode.
+
+let startItems = (!!localStorage.todo) 
+    ? JSON.parse(localStorage.todo) 
+    : {todo: ['Pay bills', 'Go Shopping'], completed: ['See the Doctor']}
+
+localStorage.setItem('todo', JSON.stringify(startItems))
+
+startItems.todo.map(task => addTaskStorage(task))
+startItems.completed.map(task => taskCompletedStorage(task))
