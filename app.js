@@ -109,7 +109,6 @@ var editTask=function(){
     }
 
     if (startItems.todo.includes(old)) {
-        console.log(old, editInput.value)
         startItems.todo.splice(startItems.todo.indexOf(old), 1, editInput.value)
     } else {
         startItems.completed.splice(startItems.completed.indexOf(old), 1, editInput.value)
