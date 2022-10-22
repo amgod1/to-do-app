@@ -58,7 +58,6 @@ var createNewTaskElement=function(taskString){
 }
 
 var addTaskStorage=function(task){
-    console.log("Add Task...");
     var listItem=createNewTaskElement(task);
 
     //Append listItem to incompleteTaskHolder
@@ -70,7 +69,6 @@ var addTaskStorage=function(task){
 }
 
 var addTask=function(){
-    console.log("Add Task...");
     //Create a new list item with the text from the #new-task:
     if (!taskInput.value) return;
     var listItem=createNewTaskElement(taskInput.value);
@@ -88,8 +86,6 @@ var addTask=function(){
 //Edit an existing task.
 
 var editTask=function(){
-    console.log("Edit Task...");
-    console.log("Change 'edit' to 'save'");
 
 
     var listItem=this.parentNode;
@@ -99,8 +95,10 @@ var editTask=function(){
     var editBtn=listItem.querySelector(".edit");
     var containsClass=listItem.classList.contains("editMode");
     //If class of the parent is .editmode
-    if(containsClass){
 
+    let old = listItem.querySelector('.task').innerText
+
+    if(containsClass){
         //switch to .editmode
         //label becomes the inputs value.
         label.innerText=editInput.value;
@@ -110,6 +108,16 @@ var editTask=function(){
         editBtn.innerText="Save";
     }
 
+    if (startItems.todo.includes(old)) {
+        console.log(old, editInput.value)
+        startItems.todo.splice(startItems.todo.indexOf(old), 1, editInput.value)
+    } else {
+        startItems.completed.splice(startItems.completed.indexOf(old), 1, editInput.value)
+    }
+
+    localStorage.setItem('todo', JSON.stringify(startItems))
+
+
     //toggle .editmode on the parent.
     listItem.classList.toggle("editMode");
 };
@@ -117,7 +125,6 @@ var editTask=function(){
 
 //Delete task.
 var deleteTask=function(){
-    console.log("Delete Task...");
 
     var listItem=this.parentNode;
     var ul=listItem.parentNode;
@@ -137,7 +144,6 @@ var deleteTask=function(){
 
 //Mark task completed
 var taskCompletedStorage=function(task){
-    console.log("Complete Task...");
 
     //Append the task list item to the #completed-tasks
     var listItem=createNewTaskElement(task);
@@ -148,7 +154,6 @@ var taskCompletedStorage=function(task){
 }
 
 var taskCompleted=function(){
-    console.log("Complete Task...");
 
     //Append the task list item to the #completed-tasks
     var listItem=this.parentNode;
@@ -165,7 +170,6 @@ var taskCompleted=function(){
 
 
 var taskIncomplete=function(){
-    console.log("Incomplete Task...");
     //Mark task as incomplete.
     //When the checkbox is unchecked
     //Append the task list item to the #incompleteTasks.
